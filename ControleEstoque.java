@@ -1,9 +1,8 @@
-/*
- Projeto N1 - Controle de Estoque
- 
- Nome: Natália Vaz Cerqueira | RA: 10779837
- Nome: Gabrielly Nogueira Rodrigues | RA: 10762966
- */
+// Projeto N1 - Controle de Estoque
+
+// Nome: Natália Vaz Cerqueira | RA: 10779837
+// Nome: Gabrielly Nogueira Rodrigues | RA: 10762966
+
 
 import java.util.Scanner;
 
@@ -34,7 +33,7 @@ public class ControleEstoque {
 
             switch (opcao) {
                 case 1:
-                    totalProdutos = cadastrarProduto(scanner, nomes, precos, quantidades, totalProdutos, capacidade);
+                    totalProdutos = cadastrarProduto(sc, nomes, precos, quantidades, totalProdutos, capacidade);
                     break;
                 case 2:
                     incluirEstoque(sc, nomes, quantidades, totalProdutos);
@@ -59,16 +58,7 @@ public class ControleEstoque {
 
     }
 
-    public static int buscarProduto(String[] nomes, int totalProdutos, String nome) {
-        for (int i = 0; i < totalProdutos; i++) {
-            if (nomes[i].equals(nome)) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    public static int cadastrarProduto(Scanner scanner, String[] nomes, double[] precos, int[] quantidades, int totalProdutos, int capacidade) {
+    public static int cadastrarProduto(Scanner sc, String[] nomes, double[] precos, int[] quantidades, int totalProdutos, int capacidade) {
         if (totalProdutos >= capacidade) {
             System.out.println("Não é possível cadastrar essa quantidade de produtos, capacidade atingida.");
             return totalProdutos;
@@ -82,9 +72,11 @@ public class ControleEstoque {
             return totalProdutos;
         }
 
-        if (buscarProduto(nomes, totalProdutos, nome) != -1) {
-            System.out.println("Produto cadastrado.");
-            return totalProdutos;
+        for (int i = 0; i < totalProdutos; i++) {
+            if (nomes[i].equals(nome)) {
+                System.out.println("Produto já cadastrado.");
+                return totalProdutos;
+            }
         }
 
         System.out.print("Preço do produto: ");
@@ -104,71 +96,74 @@ public class ControleEstoque {
         return totalProdutos + 1;
     }
 
-    public static void incluirEstoque(Scanner scanner, String[] nomes, int[] quantidades, int totalProdutos) {
+    public static void incluirEstoque(Scanner sc, String[] nomes, int[] quantidades, int totalProdutos) {
         System.out.print("Nome do produto: ");
         String nome = sc.nextLine();
 
-        int indice = buscarProduto(nomes, totalProdutos, nome);
-        if (indice == -1) {
-            System.out.println("Produto não cadastrado no sistema.");
-            return;
+        for (int i = 0; i < totalProdutos; i++) {
+            if (nomes[i].equals(nome)) {
+                System.out.print("Quantidade a ser adicionada ao estoque: ");
+                int quantidade = sc.nextInt();
+                sc.nextLine();
+
+                if (quantidade <= 0) {
+                    System.out.println("A quantidade deve ser positiva.");
+                    return;
+                }
+
+                quantidades[i] += quantidade;
+                System.out.println("Inclusão de estoque registrada! Quantidade atual: " + quantidades[i]);
+                return;
+            }
         }
 
-        System.out.print("Quantidade a ser adicionada ao estoque: ");
-        int quantidade = sc.nextInt();
-        sc.nextLine();
-
-        if (quantidade <= 0) {
-            System.out.println("A quantidade deve ser positiva.");
-            return;
-        }
-
-        quantidades[indice] += quantidade;
-        System.out.println("Inclusão de estoque registrada! Quantidade atual: " + quantidades[indice]);
+        System.out.println("Produto não cadastrado no sistema.");
     }
 
-    public static void retirarEstoque(Scanner scanner, String[] nomes, int[] quantidades, int totalProdutos) {
+    public static void retirarEstoque(Scanner sc, String[] nomes, int[] quantidades, int totalProdutos) {
         System.out.print("Nome do produto: ");
         String nome = sc.nextLine();
 
-        int indice = buscarProduto(nomes, totalProdutos, nome);
-        if (indice == -1) {
-            System.out.println("Produto não cadastrado no sistema.");
-            return;
+        for (int i = 0; i < totalProdutos; i++) {
+            if (nomes[i].equals(nome)) {
+                System.out.print("Quantidade a ser retirada do estoque: ");
+                int quantidade = sc.nextInt();
+                sc.nextLine();
+
+                if (quantidade <= 0) {
+                    System.out.println("A quantidade a ser retirada deve ser positiva.");
+                    return;
+                }
+
+                if (quantidade > quantidades[i]) {
+                    System.out.println("Quantidade em estoque insuficiente! Estoque atual disponível: " + quantidades[i]);
+                    return;
+                }
+
+                quantidades[i] -= quantidade;
+                System.out.println("Retirada de estoque registrada! Quantidade atual: " + quantidades[i]);
+                return;
+            }
         }
 
-        System.out.print("Quantidade a ser retirada do estoque: ");
-        int quantidade = sc.nextInt();
-        sc.nextLine();
-
-        if (quantidade <= 0) {
-            System.out.println("A quantidade a ser retirada deve ser positiva.");
-            return;
-        }
-
-        if (quantidade > quantidades[indice]) {
-            System.out.println("Quantidade em estoque insuficiente! Estoque atual disponível: " + quantidades[indice]);
-            return;
-        }
-
-        quantidades[indice] -= quantidade;
-        System.out.println("Retirada de estoque registrada! Quantidade atual: " + quantidades[indice]);
+        System.out.println("Produto não cadastrado no sistema.");
     }
 
     public static void consultarProduto(Scanner sc, String[] nomes, double[] precos, int[] quantidades, int totalProdutos) {
         System.out.print("Nome do produto para consultar: ");
         String nome = sc.nextLine();
 
-        int indice = buscarProduto(nomes, totalProdutos, nome);
-        if (indice == -1) {
-            System.out.println("O produto informado não existe.");
-            return;
+        for (int i = 0; i < totalProdutos; i++) {
+            if (nomes[i].equals(nome)) {
+                System.out.println("\n--- Detalhes do Produto ---");
+                System.out.println("Nome: " + nomes[i]);
+                System.out.printf("Preço: R$ %.2f\n", precos[i]);
+                System.out.println("Quantidade atual em estoque: " + quantidades[i]);
+                return;
+            }
         }
 
-        System.out.println("\n--- Detalhes do Produto ---");
-        System.out.println("Nome: " + nomes[indice]);
-        System.out.printf("Preço: R$ %.2f\n", precos[indice]);
-        System.out.println("Quantidade atual em estoque: " + quantidades[indice]);
+        System.out.println("O produto informado não existe.");
     }
 
     public static void gerarRelatorio(String[] nomes, double[] precos, int[] quantidades, int totalProdutos) {
